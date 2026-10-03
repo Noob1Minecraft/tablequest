@@ -118,6 +118,8 @@ Workflow уже задаёт `BASE_PATH=/tablequest/`. Если измените
 
 Сервис `tablequest` создан как **Static Site**, не Web Service. Build: `npm install && npm run build`; Publish: `dist`; переменные `NODE_VERSION=24`, `BASE_PATH=/`, `SKIP_INSTALL_DEPS=true`. `render.yaml` сохраняет воспроизводимую конфигурацию. Существующий сервис создан напрямую, поэтому изменения Blueprint не применяются к нему автоматически: настройки сервиса меняются отдельно либо сервис переводится под управление Blueprint.
 
+В Render также настроены HTTP Headers: `/manifest.webmanifest` → `Content-Type: application/manifest+json`; `/*` → `Cache-Control: public, max-age=0, must-revalidate, no-transform`. Это даёт manifest корректный MIME-тип и запрещает CDN преобразовывать иконки в варианты, несовместимые с precache при офлайн-запросах.
+
 Приложение использует query-параметры и внутреннее состояние, без дополнительных URL-маршрутов; catch-all rewrite не требуется. Manifest, иконки, изображения и service worker используют base текущей площадки. GitHub Actions отдельно задаёт `BASE_PATH=/tablequest/`, поэтому root-конфигурация новых площадок не меняет GitHub Pages.
 
 Загружайте на статический хостинг содержимое `dist/`, а не исходники. Service worker включён только в production-сборке. Предложение обновить уже открытый клиент находится во вторичном меню; обновление не прерывает раунд.
