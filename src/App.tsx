@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import {
@@ -43,6 +43,20 @@ import { createSession, demoSession, restoreDemo } from "./session";
 import { Modal, QRModal } from "./components/Modal";
 import { Welcome } from "./components/Welcome";
 import { ScoreBoard, TeamFields } from "./components/Teams";
+import {
+  RestaurantMoment,
+  eligibleMoment,
+} from "./features/restaurantMoment/RestaurantMoment";
+import {
+  FeedbackDetails,
+  emptyDetails,
+} from "./features/feedback/FeedbackDetails";
+import { submitFeedback } from "./features/feedback/model";
+import { hospitalityCopy } from "./features/copy";
+import { webhookURL } from "./integrations/feedback/webhook";
+import type { Delivery } from "./integrations/feedback/webhook";
+import { restaurant } from "./config/restaurant";
+const FeedbackView = lazy(() => import("./admin/FeedbackView"));
 
 const companyIcons = {
   friends: Users,
@@ -55,6 +69,15 @@ const companies: Company[] = ["friends", "couple", "family", "party"];
 const modes: Mode[] = ["connect", "fun", "battle"];
 const params = new URLSearchParams(location.search);
 const isDemo = params.get("demo") === "true";
+const isAdmin = params.get("admin") === "true";
+const venue = (params.get("venue") ?? "")
+  .replace(/[^\p{L}\p{N} _-]/gu, "")
+  .slice(0, 40);
+const businessEnabled =
+  restaurant.restaurantMomentEnabled ||
+  params.get("business") === "true" ||
+  venue === "demo";
+const feedbackEndpoint = webhookURL(import.meta.env.VITE_FEEDBACK_WEBHOOK_URL);
 const initialDemoMode = params.get("mode") === "battle" ? "battle" : "fun";
 const storageKey = isDemo ? "tablequest.demo.game" : "tablequest.game";
 const tableNumber = params
@@ -81,6 +104,12 @@ export default function App() {
   const [rating, setRating] = useState<number | null>(null);
   const [repeat, setRepeat] = useState<"yes" | "maybe" | "no" | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [feedbackDetails, setFeedbackDetails] = useState(emptyDetails);
+  const [feedbackBusy, setFeedbackBusy] = useState(false);
+  const [delivery, setDelivery] = useState<Delivery>("local");
+  const feedbackLock = useRef(false);
+  const feedbackGeneration = useRef(0);
+  const copy = hospitalityCopy[locale];
   const main = useRef<HTMLElement>(null);
   const t = (key: Key, values?: Record<string, string | number>) =>
     translate(locale, key, values);
@@ -122,9 +151,45 @@ export default function App() {
     setGame((g) => ({ ...g, ...values }));
   }
   function resetFeedback() {
+    feedbackGeneration.current++;
     setRating(null);
     setRepeat(null);
     setSubmitted(false);
+    setFeedbackDetails(emptyDetails);
+    setDelivery("local");
+  }
+  async function saveFeedback() {
+    if (rating === null || repeat === null || feedbackLock.current) return;
+    feedbackLock.current = true;
+    const generation = feedbackGeneration.current;
+    setFeedbackBusy(true);
+    try {
+      const result = await submitFeedback(
+        {
+          id: `${isDemo ? "demo" : "guest"}:${game.startedAt}:${game.mode}`,
+          rating,
+          answer: rating === 2 ? "yes" : rating === 1 ? "little" : "no",
+          metric: "connection-v1",
+          company: game.company === "party" ? "celebration" : game.company,
+          repeat,
+          locale,
+          mode: game.mode,
+          date: new Date().toISOString(),
+          tableId: tableNumber ?? "",
+          venue,
+          ...feedbackDetails,
+        },
+        isDemo,
+        feedbackEndpoint,
+      );
+      if (generation !== feedbackGeneration.current) return;
+      setDelivery(result.delivery);
+      if (result.localSaved) setSubmitted(true);
+      else setStorageOkay(false);
+    } finally {
+      feedbackLock.current = false;
+      setFeedbackBusy(false);
+    }
   }
   function fresh() {
     if (isDemo) {
@@ -281,7 +346,11 @@ export default function App() {
         </div>
       ) : null}
       <main id="main" ref={main} tabIndex={-1}>
-        {screen === "welcome" ? (
+        {isAdmin ? (
+          <Suspense fallback={<p role="status">{copy.pending}</p>}>
+            <FeedbackView locale={locale} />
+          </Suspense>
+        ) : screen === "welcome" ? (
           <Welcome
             t={t}
             table={tableNumber}
@@ -703,6 +772,14 @@ export default function App() {
                         : t(game.mode === "fun" ? "crewFun" : "crewConnect")}
                     </h1>
                     <p>{t("resultTitle")}</p>
+                    <p className="eyebrow">
+                      {t(game.company)} ·{" "}
+                      {game.mode === "battle"
+                        ? "Team Battle"
+                        : game.mode === "fun"
+                          ? "Fun"
+                          : "Connect"}
+                    </p>
                   </div>
                   {game.mode === "battle" ? scoreBoard : null}
                   <div className="stats">
@@ -747,14 +824,26 @@ export default function App() {
                     ))}
                   </ul>
                 </details>
-                <div className="reward-card">
-                  <Trophy size={23} strokeWidth={1.3} />
-                  <div>
-                    <h2>{t("reward")}</h2>
-                    <p>{t("rewardDesc")}</p>
-                    <small>{t("rewardNote")}</small>
+                {!eligibleMoment(game, businessEnabled) && (
+                  <div className="reward-card">
+                    <Trophy size={23} strokeWidth={1.3} />
+                    <div>
+                      <h2>{t("reward")}</h2>
+                      <p>{t("rewardDesc")}</p>
+                      <small>{t("rewardNote")}</small>
+                    </div>
                   </div>
-                </div>
+                )}
+                {eligibleMoment(game, businessEnabled) && (
+                  <RestaurantMoment
+                    key={`${game.startedAt}:${game.mode}`}
+                    game={game}
+                    locale={locale}
+                    tableId={tableNumber ?? ""}
+                    venue={venue}
+                    demo={isDemo}
+                  />
+                )}
                 <div className="result-actions">
                   <button className="button primary full" onClick={start}>
                     {t("again")}
@@ -785,6 +874,11 @@ export default function App() {
                   <h1>{t(submitted ? "thanks" : "feedbackTitle")}</h1>
                   <p>{t(submitted ? "tagline" : "feedbackDesc")}</p>
                 </div>
+                {submitted && delivery !== "local" && (
+                  <p role="status">
+                    {delivery === "sent" ? copy.sent : copy.fallback}
+                  </p>
+                )}
                 {submitted ? (
                   <button
                     className="button primary full"
@@ -797,23 +891,7 @@ export default function App() {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (rating === null || repeat === null) return;
-                      const feedbackKey = isDemo
-                        ? "tablequest.demo.feedback"
-                        : "tablequest.feedback";
-                      const previous = readStorage(feedbackKey);
-                      const saved = saveStorage(feedbackKey, [
-                        ...(Array.isArray(previous) ? previous.slice(-49) : []),
-                        {
-                          rating,
-                          repeat,
-                          locale,
-                          mode: game.mode,
-                          date: new Date().toISOString(),
-                        },
-                      ]);
-                      if (saved) setSubmitted(true);
-                      else setStorageOkay(false);
+                      void saveFeedback();
                     }}
                   >
                     <fieldset className="rating-fieldset">
@@ -850,12 +928,21 @@ export default function App() {
                         ))}
                       </div>
                     </fieldset>
-                    <p className="fine-print">{t("localFeedback")}</p>
+                    <FeedbackDetails
+                      locale={locale}
+                      value={feedbackDetails}
+                      change={setFeedbackDetails}
+                    />
+                    <p className="fine-print">
+                      {feedbackEndpoint && !isDemo ? copy.external : copy.local}
+                    </p>
                     <button
                       className="button primary full"
-                      disabled={rating === null || repeat === null}
+                      disabled={
+                        rating === null || repeat === null || feedbackBusy
+                      }
                     >
-                      {t("submit")}
+                      {feedbackBusy ? copy.sending : t("submit")}
                       <Check size={17} />
                     </button>
                   </form>

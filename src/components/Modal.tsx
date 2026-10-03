@@ -61,6 +61,8 @@ export function QRModal({ t, close }: { t: T; close: () => void }) {
     const link = new URL(location.href);
     link.searchParams.delete("demo");
     link.searchParams.delete("mode");
+    link.searchParams.delete("admin");
+    link.searchParams.delete("business");
     return link.protocol === "https:" ? link.href : "";
   });
   const [svg, setSvg] = useState("");

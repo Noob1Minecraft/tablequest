@@ -24,9 +24,11 @@ export function selectQuests(
   minutes: 5 | 10,
   random = Math.random,
 ): string[] {
+  // Keep the legacy saved-game value `party`; content uses `celebration`.
+  const context = company === "party" ? "celebration" : company;
   const pool = quests.filter(
     (q) =>
-      (q.category.includes("any") || q.category.includes(company)) &&
+      (q.category.includes("any") || q.category.includes(context)) &&
       q.modes.includes(mode) &&
       q.minPlayers <= players &&
       q.maxPlayers >= players,
@@ -37,6 +39,13 @@ export function selectQuests(
     const j = Math.floor(random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
+  // Stable partition after shuffling: contextual tasks first, shared tasks fill
+  // the longer session. Never fall back to another group's exclusive content.
+  pool.sort(
+    (a, b) =>
+      Number(b.category.includes(context)) -
+      Number(a.category.includes(context)),
+  );
   return pool.slice(0, count).map((q) => q.id);
 }
 export const roundSeconds = (game: Game) => (game.minutes === 5 ? 60 : 90);

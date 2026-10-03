@@ -1,6 +1,7 @@
 export type Locale = "ru" | "kk" | "en";
 export type Mode = "connect" | "fun" | "battle";
 export type Company = "friends" | "couple" | "family" | "party";
+export type QuestContext = Exclude<Company, "party"> | "celebration";
 export type Localized = Record<Locale, string>;
 export interface Quest {
   id: string;
@@ -9,7 +10,7 @@ export interface Quest {
   prompt: Localized;
   instruction: Localized;
   modes: Mode[];
-  category: (Company | "any")[];
+  category: (QuestContext | "any")[];
   minPlayers: number;
   maxPlayers: number;
 }

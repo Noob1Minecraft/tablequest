@@ -1,8 +1,12 @@
 [
   {
     "id": "c1",
-    "modes": ["connect"],
-    "category": ["any"],
+    "modes": [
+      "connect"
+    ],
+    "category": [
+      "any"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -28,8 +32,12 @@
   },
   {
     "id": "c2",
-    "modes": ["connect"],
-    "category": ["any"],
+    "modes": [
+      "connect"
+    ],
+    "category": [
+      "any"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -55,8 +63,14 @@
   },
   {
     "id": "c3",
-    "modes": ["connect"],
-    "category": ["any"],
+    "modes": [
+      "connect"
+    ],
+    "category": [
+      "friends",
+      "couple",
+      "celebration"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -82,8 +96,14 @@
   },
   {
     "id": "c4",
-    "modes": ["connect"],
-    "category": ["any"],
+    "modes": [
+      "connect"
+    ],
+    "category": [
+      "couple",
+      "family",
+      "celebration"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -109,8 +129,14 @@
   },
   {
     "id": "c5",
-    "modes": ["connect"],
-    "category": ["any"],
+    "modes": [
+      "connect"
+    ],
+    "category": [
+      "friends",
+      "family",
+      "celebration"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -136,8 +162,14 @@
   },
   {
     "id": "c6",
-    "modes": ["connect"],
-    "category": ["any"],
+    "modes": [
+      "connect"
+    ],
+    "category": [
+      "friends",
+      "couple",
+      "family"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -163,8 +195,12 @@
   },
   {
     "id": "f1",
-    "modes": ["fun"],
-    "category": ["any"],
+    "modes": [
+      "fun"
+    ],
+    "category": [
+      "any"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -190,8 +226,12 @@
   },
   {
     "id": "f2",
-    "modes": ["fun"],
-    "category": ["any"],
+    "modes": [
+      "fun"
+    ],
+    "category": [
+      "any"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -217,8 +257,14 @@
   },
   {
     "id": "f3",
-    "modes": ["fun"],
-    "category": ["any"],
+    "modes": [
+      "fun"
+    ],
+    "category": [
+      "friends",
+      "couple",
+      "celebration"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -244,8 +290,14 @@
   },
   {
     "id": "f4",
-    "modes": ["fun"],
-    "category": ["any"],
+    "modes": [
+      "fun"
+    ],
+    "category": [
+      "friends",
+      "couple",
+      "family"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -271,8 +323,14 @@
   },
   {
     "id": "f5",
-    "modes": ["fun"],
-    "category": ["any"],
+    "modes": [
+      "fun"
+    ],
+    "category": [
+      "friends",
+      "family",
+      "celebration"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -298,8 +356,14 @@
   },
   {
     "id": "f6",
-    "modes": ["fun"],
-    "category": ["any"],
+    "modes": [
+      "fun"
+    ],
+    "category": [
+      "couple",
+      "family",
+      "celebration"
+    ],
     "minPlayers": 2,
     "maxPlayers": 8,
     "title": {
@@ -325,8 +389,12 @@
   },
   {
     "id": "b1",
-    "modes": ["battle"],
-    "category": ["any"],
+    "modes": [
+      "battle"
+    ],
+    "category": [
+      "any"
+    ],
     "minPlayers": 4,
     "maxPlayers": 8,
     "title": {
@@ -352,8 +420,12 @@
   },
   {
     "id": "b2",
-    "modes": ["battle"],
-    "category": ["any"],
+    "modes": [
+      "battle"
+    ],
+    "category": [
+      "any"
+    ],
     "minPlayers": 4,
     "maxPlayers": 8,
     "title": {
@@ -379,8 +451,14 @@
   },
   {
     "id": "b3",
-    "modes": ["battle"],
-    "category": ["any"],
+    "modes": [
+      "battle"
+    ],
+    "category": [
+      "friends",
+      "couple",
+      "celebration"
+    ],
     "minPlayers": 4,
     "maxPlayers": 8,
     "title": {
@@ -406,8 +484,14 @@
   },
   {
     "id": "b4",
-    "modes": ["battle"],
-    "category": ["any"],
+    "modes": [
+      "battle"
+    ],
+    "category": [
+      "couple",
+      "family",
+      "celebration"
+    ],
     "minPlayers": 4,
     "maxPlayers": 8,
     "title": {
@@ -433,8 +517,14 @@
   },
   {
     "id": "b5",
-    "modes": ["battle"],
-    "category": ["any"],
+    "modes": [
+      "battle"
+    ],
+    "category": [
+      "friends",
+      "family",
+      "celebration"
+    ],
     "minPlayers": 4,
     "maxPlayers": 8,
     "title": {
@@ -460,8 +550,14 @@
   },
   {
     "id": "b6",
-    "modes": ["battle"],
-    "category": ["any"],
+    "modes": [
+      "battle"
+    ],
+    "category": [
+      "friends",
+      "couple",
+      "family"
+    ],
     "minPlayers": 4,
     "maxPlayers": 8,
     "title": {

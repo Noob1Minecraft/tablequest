@@ -1224,7 +1224,8 @@ legend {
   background: var(--surface);
 }
 .rating-options > button.selected,
-.repeat-options > .selected {
+.repeat-options > .selected,
+.repeat-options > .selected:hover:not(:disabled) {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--bg);
@@ -1978,6 +1979,191 @@ dialog::backdrop {
     font-size: 30px;
   }
 }
+
+/* Quiet, optional hospitality moments; the guest flow remains phone-down first. */
+.hospitality-card {
+  border: 1px solid var(--line, #424738);
+  border-radius: 16px;
+  padding: 24px;
+  margin-block: 24px;
+  background: #191c18;
+  overflow-wrap: anywhere;
+}
+.hospitality-card h2 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  margin: 16px 0;
+}
+.hospitality-card h3 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #ddc396;
+}
+.hospitality-card p {
+  line-height: 1.65;
+}
+.hospitality-card .button {
+  margin-top: 12px;
+}
+.feedback-details {
+  margin-block: 24px;
+  padding-block: 20px;
+  border-block: 1px solid #424738;
+}
+.feedback-details summary {
+  min-height: 44px;
+  cursor: pointer;
+  color: #ddc396;
+  display: flex;
+  align-items: center;
+}
+.feedback-details summary::after {
+  content: "+";
+  margin-left: auto;
+}
+.feedback-details[open] summary::after {
+  content: "−";
+}
+.feedback-details fieldset {
+  border: 0;
+  margin: 20px 0;
+  padding: 0;
+}
+.feedback-details legend {
+  margin-bottom: 12px;
+}
+.star-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.star-options .button {
+  padding: 10px;
+  min-width: 0;
+}
+.button[aria-pressed="true"] {
+  border-color: #ddc396;
+  background: #303427;
+}
+.feedback-details label {
+  display: grid;
+  gap: 10px;
+  margin-block: 20px;
+}
+.feedback-details select,
+.feedback-details textarea {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #64694f;
+  border-radius: 8px;
+  color: #f3efe5;
+  background: #191c18;
+  padding: 12px;
+  font: inherit;
+}
+.feedback-details textarea {
+  resize: vertical;
+}
+.local-admin {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 8px;
+}
+.local-admin h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(28px, 5vw, 44px);
+}
+.local-admin > p {
+  line-height: 1.65;
+  max-width: 720px;
+}
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0;
+}
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.admin-stats > div {
+  border-top: 1px solid #64694f;
+  padding-top: 16px;
+}
+.admin-stats dd {
+  font:
+    36px Georgia,
+    serif;
+  color: #ddc396;
+  margin: 12px 0;
+}
+.admin-stats dt {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.category-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 0;
+  list-style: none;
+  margin: 24px 0;
+}
+.feedback-records {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.feedback-records .hospitality-card {
+  margin-block: 16px;
+}
+.feedback-records dl {
+  display: grid;
+  gap: 12px;
+}
+.feedback-records dt {
+  font-size: 12px;
+  color: #b6b8ab;
+}
+.feedback-records dd {
+  margin: 4px 0 0;
+}
+.saved-comment {
+  white-space: pre-wrap;
+}
+.quest-card {
+  transition:
+    transform 220ms ease-out,
+    border-color 220ms ease-out;
+}
+.quest-card:active {
+  transform: scale(0.994);
+  border-color: #ddc396;
+}
+@media (hover: hover) and (pointer: fine) {
+  .quest-card:hover {
+    transform: translateY(-2px);
+  }
+}
+@media (max-width: 600px) {
+  .feedback-records {
+    grid-template-columns: 1fr;
+  }
+  .hospitality-card {
+    padding: 20px;
+  }
+  .admin-stats {
+    gap: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quest-card:hover,
+  .quest-card:active {
+    transform: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -2034,3 +2220,5 @@ dialog::backdrop {
     min-width: 44px;
   }
 }
+
+.restaurant-logo { width: 48px; height: 48px; object-fit: contain; }

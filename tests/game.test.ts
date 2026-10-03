@@ -19,6 +19,18 @@ describe("quest coverage", () => {
           for (const minutes of [5, 10] as const) {
             const ids = selectQuests(company, mode, players, minutes);
             expect(new Set(ids).size).toBe(minutes === 5 ? 3 : 5);
+            const context = company === "party" ? "celebration" : company;
+            expect(
+              ids.every((id) => {
+                const q = quests.find((q) => q.id === id)!;
+                return (
+                  q.category.includes(context) || q.category.includes("any")
+                );
+              }),
+            ).toBe(true);
+            expect(quests.find((q) => q.id === ids[0])!.category).toContain(
+              context,
+            );
             expect(
               ids.every((id) =>
                 quests.find((q) => q.id === id)?.modes.includes(mode),
@@ -31,6 +43,16 @@ describe("quest coverage", () => {
   }
   it("rejects underpopulated battle", () =>
     expect(() => selectQuests("couple", "battle", 2, 5)).toThrow());
+  it("changes the selected content with context under the same random seed", () => {
+    for (const mode of ["connect", "fun", "battle"] as const) {
+      const sets = ["friends", "couple", "family", "party"].map((c) =>
+        selectQuests(c as Company, mode, 4, 5, () => 0.5)
+          .sort()
+          .join(","),
+      );
+      expect(new Set(sets).size).toBe(4);
+    }
+  });
   it("all quests have three complete translations", () => {
     expect(new Set(quests.map((q) => q.id)).size).toBe(quests.length);
     for (const quest of quests)
