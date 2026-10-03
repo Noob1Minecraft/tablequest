@@ -1,29 +1,30 @@
 import { useEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import {
   ArrowRight,
   ArrowLeft,
   Check,
   CheckCircle2,
-  ChevronRight,
   Clock3,
-  Coffee,
   Heart,
-  Laugh,
   MessageCircle,
   Minus,
   Pause,
   Play,
   Plus,
   QrCode,
-  ShieldCheck,
   Smartphone,
   Sparkles,
   Swords,
   Trophy,
   Users,
-  WifiOff,
-  X,
+  Wine,
+  House,
+  PartyPopper,
+  MoreHorizontal,
+  RotateCcw,
+  ChevronDown,
 } from "lucide-react";
 import { translate, detectLocale } from "./i18n";
 import type { Key } from "./i18n";
@@ -37,25 +38,43 @@ import {
   roundSeconds,
   saveStorage,
   secondsLeft,
-  selectQuests,
 } from "./game";
+import { createSession, demoSession, restoreDemo } from "./session";
 import { Modal, QRModal } from "./components/Modal";
+import { Welcome } from "./components/Welcome";
+import { ScoreBoard, TeamFields } from "./components/Teams";
 
-const companyIcons = { friends: "👋", couple: "💛", family: "🏡", party: "🎉" };
-const modeIcons = { connect: MessageCircle, fun: Laugh, battle: Swords };
+const companyIcons = {
+  friends: Users,
+  couple: Heart,
+  family: House,
+  party: PartyPopper,
+};
+const modeIcons = { connect: MessageCircle, fun: Sparkles, battle: Swords };
 const companies: Company[] = ["friends", "couple", "family", "party"];
 const modes: Mode[] = ["connect", "fun", "battle"];
-const resumeGame = () => restoreGame(readStorage("tablequest.game"));
+const params = new URLSearchParams(location.search);
+const isDemo = params.get("demo") === "true";
+const initialDemoMode = params.get("mode") === "battle" ? "battle" : "fun";
+const storageKey = isDemo ? "tablequest.demo.game" : "tablequest.game";
+const tableNumber = params
+  .get("table")
+  ?.replace(/[^\p{L}\p{N} -]/gu, "")
+  .slice(0, 20);
 
 export default function App() {
   const [locale, setLocale] = useState<Locale>(() =>
     detectLocale(readStorage("tablequest.language"), navigator.languages),
   );
-  const [game, setGame] = useState<Game>(resumeGame);
-  const [showWelcome, setShowWelcome] = useState(true);
+  const [game, setGame] = useState<Game>(() =>
+    isDemo
+      ? restoreDemo(readStorage(storageKey), initialDemoMode)
+      : restoreGame(readStorage(storageKey)),
+  );
+  const [showWelcome, setShowWelcome] = useState(!isDemo);
   const [storageOkay, setStorageOkay] = useState(true);
-  const [online, setOnline] = useState(navigator.onLine);
   const [qrOpen, setQrOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const [error, setError] = useState(false);
   const [now, setNow] = useState(Date.now());
@@ -63,42 +82,27 @@ export default function App() {
   const [repeat, setRepeat] = useState<"yes" | "maybe" | "no" | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const main = useRef<HTMLElement>(null);
-  const t = (key: Key, params?: Record<string, string | number>) =>
-    translate(locale, key, params);
+  const t = (key: Key, values?: Record<string, string | number>) =>
+    translate(locale, key, values);
   const screen = showWelcome ? "welcome" : game.screen;
   const active =
     game.questIds.length > 0 &&
     !["result", "feedback", "welcome"].includes(game.screen);
   const current = quests.find((q) => q.id === game.questIds[game.round]);
   const left = secondsLeft(game, now);
-  const team = (index: 0 | 1) =>
-    game.teams[index] || t(index === 0 ? "teamA" : "teamB");
-  const tableNumber = new URLSearchParams(location.search)
-    .get("table")
-    ?.replace(/[^\p{L}\p{N} -]/gu, "")
-    .slice(0, 20);
+  const team = (i: 0 | 1) => game.teams[i] || t(i === 0 ? "teamA" : "teamB");
   const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
+    offlineReady: [offlineReady],
+    needRefresh: [needRefresh],
     updateServiceWorker,
   } = useRegisterSW();
-
   useEffect(() => {
     document.documentElement.lang = locale;
     if (!saveStorage("tablequest.language", locale)) setStorageOkay(false);
   }, [locale]);
   useEffect(() => {
-    if (!saveStorage("tablequest.game", game)) setStorageOkay(false);
+    if (!saveStorage(storageKey, game)) setStorageOkay(false);
   }, [game]);
-  useEffect(() => {
-    const update = () => setOnline(navigator.onLine);
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
-    return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
-    };
-  }, []);
   useEffect(() => {
     if (screen !== "timer") return;
     const tick = () => setNow(Date.now());
@@ -114,41 +118,55 @@ export default function App() {
     main.current?.focus();
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [screen, game.round]);
-
   function patch(values: Partial<Game>) {
     setGame((g) => ({ ...g, ...values }));
   }
+  function resetFeedback() {
+    setRating(null);
+    setRepeat(null);
+    setSubmitted(false);
+  }
   function fresh() {
+    if (isDemo) {
+      switchDemo("fun");
+      setResetOpen(false);
+      return;
+    }
     setGame({ ...initialGame(), screen: "context" });
     setShowWelcome(false);
     setResetOpen(false);
-    setSubmitted(false);
-    setRating(null);
-    setRepeat(null);
     setError(false);
+    resetFeedback();
   }
   function start() {
     try {
-      const ids = selectQuests(
-        game.company,
-        game.mode,
-        game.players,
-        game.minutes,
-      );
-      patch({
-        questIds: ids,
-        round: 0,
-        scores: [0, 0],
-        screen: game.mode === "battle" ? "teams" : "quest",
-        remaining: roundSeconds(game),
-        deadline: null,
-        startedAt: Date.now(),
-        finishedAt: null,
-      });
+      setGame(createSession(game, isDemo));
       setError(false);
+      resetFeedback();
     } catch {
       setError(true);
     }
+  }
+  function switchDemo(mode: Mode) {
+    const link = new URL(location.href);
+    link.searchParams.set("mode", mode);
+    history.replaceState(null, "", link);
+    setGame(demoSession(mode));
+    setShowWelcome(false);
+    setMenuOpen(false);
+    resetFeedback();
+  }
+  function differentMode() {
+    setGame({
+      ...initialGame(),
+      screen: "mode",
+      company: game.company,
+      players: game.players,
+      minutes: game.minutes,
+      mode: game.mode,
+      teams: game.teams,
+    });
+    resetFeedback();
   }
   function beginTimer() {
     const stamp = Date.now();
@@ -177,28 +195,26 @@ export default function App() {
       deadline: g.deadline === null ? stamp + g.remaining * 1000 : null,
     }));
   }
-  const headerBack = () => {
+  function headerBack() {
     if (screen === "context") setShowWelcome(true);
     else if (screen === "mode") patch({ screen: "context" });
     else if (screen === "teams") patch({ screen: "mode" });
     else setResetOpen(true);
-  };
-  const scoreBoard = (
-    <div className="score-board">
-      <div>
-        <span>{team(0)}</span>
-        <strong>{game.scores[0]}</strong>
-      </div>
-      <span className="score-divider">:</span>
-      <div>
-        <span>{team(1)}</span>
-        <strong>{game.scores[1]}</strong>
-      </div>
-    </div>
+  }
+  const setup = ["context", "mode", "teams"].includes(screen);
+  const completed = ["result", "feedback"].includes(screen);
+  const scoreBoard = <ScoreBoard game={game} team={team} />;
+  const teamFields = (
+    <TeamFields game={game} t={t} change={(teams) => patch({ teams })} />
   );
-
+  const modeDescription = (mode: Mode) =>
+    mode === "battle"
+      ? game.minutes === 10
+        ? t("battleDescFive")
+        : t("battleDesc", { rounds: 3 })
+      : t(`${mode}Desc`);
   return (
-    <div className="app-shell">
+    <div className={`app-shell screen-${screen}`} data-design="after-hours">
       <a className="skip" href="#main">
         {t("skip")}
       </a>
@@ -216,285 +232,286 @@ export default function App() {
           </span>
         </button>
         <span className="header-tagline">{t("tagline")}</span>
-        <label className="language">
-          <span className="sr-only">{t("language")}</span>
-          <select
-            value={locale}
-            onChange={(e) => setLocale(e.target.value as Locale)}
+        <div className="header-controls">
+          <label className="language">
+            <span className="sr-only">{t("language")}</span>
+            <select
+              value={locale}
+              onChange={(e) => setLocale(e.target.value as Locale)}
+            >
+              <option value="ru">Русский</option>
+              <option value="kk">Қазақша</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <button
+            className="icon-button menu-trigger"
+            onClick={() => setMenuOpen(true)}
+            aria-label={t("menu")}
           >
-            <option value="ru">Русский</option>
-            <option value="kk">Қазақша</option>
-            <option value="en">English</option>
-          </select>
-        </label>
+            <MoreHorizontal size={22} />
+          </button>
+        </div>
       </header>
+      {isDemo ? (
+        <nav className="demo-bar" aria-label={t("demoTitle")}>
+          <span>{t("demoTitle")}</span>
+          <button
+            aria-pressed={game.mode === "fun"}
+            onClick={() => switchDemo("fun")}
+          >
+            Fun
+          </button>
+          <button
+            aria-pressed={game.mode === "battle"}
+            onClick={() => switchDemo("battle")}
+          >
+            Team Battle
+          </button>
+          <a
+            href={`${import.meta.env.BASE_URL}${tableNumber ? `?table=${encodeURIComponent(tableNumber)}` : ""}`}
+          >
+            {t("guestMode")}
+          </a>
+        </nav>
+      ) : null}
       {!storageOkay ? (
         <div className="notice" role="status">
           {t("storageWarning")}
         </div>
       ) : null}
-      {!online ? (
-        <div className="notice" role="status">
-          <WifiOff size={16} />
-          {t("offline")}
-        </div>
-      ) : null}
       <main id="main" ref={main} tabIndex={-1}>
         {screen === "welcome" ? (
-          <>
-            <section className="welcome">
-              <div className="hero-copy">
-                <div className="eyebrow">
-                  <span className="live-dot" />
-                  {tableNumber
-                    ? t("table", { number: tableNumber })
-                    : t("label")}
-                </div>
-                <h1>{t("hero")}</h1>
-                <p className="hero-description">{t("intro")}</p>
-                <div className="hero-actions">
-                  <button
-                    className="button primary"
-                    onClick={active ? () => setShowWelcome(false) : fresh}
-                  >
-                    {t(active ? "resume" : "start")}
-                    <ArrowRight size={20} />
-                  </button>
-                  {active ? (
-                    <button
-                      className="text-button"
-                      onClick={() => setResetOpen(true)}
-                    >
-                      {t("fresh")}
-                    </button>
-                  ) : null}
-                </div>
-                <div className="hero-meta">
-                  <span>
-                    <Clock3 size={16} />
-                    5–10 {t("minutesShort")}
-                  </span>
-                  <span>
-                    <Users size={16} />
-                    2–8 {t("peopleShort")}
-                  </span>
-                </div>
-              </div>
-              <div className="table-scene" aria-hidden="true">
-                <span className="orbit orbit-one" />
-                <span className="orbit orbit-two" />
-                <div className="scene-spark">✳</div>
-                <div className="floating-tag">
-                  <span>✦</span> {t("onePhone")}
-                </div>
-                <div className="menu-card">
-                  <div className="menu-top">
-                    <span>TABLEQUEST</span>
-                    <span>01 / ∞</span>
-                  </div>
-                  <div className="menu-label">{t("cardTag")}</div>
-                  <div className="menu-title">{t("cardTitle")}</div>
-                  <div className="plate">
-                    <div className="plate-inner">
-                      <span className="face-eye left" />
-                      <span className="face-eye right" />
-                      <span className="face-smile" />
-                    </div>
-                  </div>
-                  <div className="menu-bottom">
-                    {t("cardNote")}
-                    <Sparkles size={20} />
-                  </div>
-                </div>
-                <div className="small-card">
-                  <Heart size={25} />
-                  <span>{t("tagline")}</span>
-                </div>
-                <div className="scene-leaf">✳</div>
-              </div>
-            </section>
-            <section className="how-section">
-              <div className="section-label">
-                {t("how")}
-                <span>01 — 03</span>
-              </div>
-              <div className="how-grid">
-                {(
-                  [
-                    ["how1", "how1desc", MessageCircle],
-                    ["how2", "how2desc", Sparkles],
-                    ["how3", "how3desc", Smartphone],
-                  ] as const
-                ).map(([title, desc, Icon], i) => (
-                  <div className="how-item" key={title}>
-                    <span className={`how-icon tone-${i}`}>
-                      <Icon size={23} />
-                    </span>
-                    <div>
-                      <h3>{t(title)}</h3>
-                      <p>{t(desc)}</p>
-                    </div>
-                    <span className="how-number">0{i + 1}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </>
+          <Welcome
+            t={t}
+            table={tableNumber}
+            active={active}
+            start={active ? () => setShowWelcome(false) : fresh}
+            fresh={() => setResetOpen(true)}
+          />
         ) : (
-          <section
-            className={`game-area ${screen === "timer" ? "timer-area" : ""}`}
-          >
+          <section className={`game-area ${screen}-area`}>
             <div className="game-top">
               <button className="text-button" onClick={headerBack}>
-                <ArrowLeft size={17} />
-                {t(
-                  ["context", "mode", "teams"].includes(screen)
-                    ? "back"
-                    : "fresh",
-                )}
+                <ArrowLeft size={16} />
+                {t(setup ? "back" : "fresh")}
               </button>
               <span>
-                {["context", "mode", "teams"].includes(screen)
+                {setup
                   ? `${t("step")} ${screen === "context" ? "01" : "02"} / 02`
-                  : t("round", {
-                      current: game.round + 1,
-                      total: game.questIds.length,
-                    })}
+                  : completed
+                    ? t("endCaption")
+                    : t("round", {
+                        current: game.round + 1,
+                        total: game.questIds.length,
+                      })}
               </span>
             </div>
-            {["context", "mode", "teams"].includes(screen) ? (
-              <div className="step-track">
-                <span className="filled" />
-                <span className={screen !== "context" ? "filled" : ""} />
-              </div>
-            ) : (
-              <div className="round-track">
-                {game.questIds.map((id, i) => (
-                  <span key={id} className={i <= game.round ? "filled" : ""} />
+            {!completed ? (
+              <div
+                className={setup ? "step-track" : "round-track"}
+                aria-hidden="true"
+              >
+                {(setup ? ["one", "two"] : game.questIds).map((id, i) => (
+                  <span
+                    key={id}
+                    className={
+                      (
+                        setup
+                          ? i === 0 || screen !== "context"
+                          : i <= game.round
+                      )
+                        ? "filled"
+                        : ""
+                    }
+                  />
                 ))}
               </div>
-            )}
+            ) : null}
             {screen === "context" ? (
               <>
                 <div className="screen-heading">
-                  <span className="eyebrow">01 / TABLEQUEST</span>
+                  <span className="eyebrow">
+                    01 <span className="label-line" /> {t("onePhone")}
+                  </span>
                   <h1>{t("contextTitle")}</h1>
                   <p>{t("contextDesc")}</p>
                 </div>
                 <div className="company-grid">
-                  {companies.map((c) => (
-                    <button
-                      key={c}
-                      className={`company-card ${game.company === c ? "selected" : ""}`}
-                      aria-pressed={game.company === c}
-                      onClick={() =>
-                        patch({
-                          company: c,
-                          players: c === "couple" ? 2 : game.players,
-                        })
-                      }
-                    >
-                      <span className="company-emoji" aria-hidden="true">
-                        {companyIcons[c]}
-                      </span>
-                      <span>{t(c)}</span>
-                      <span className="selection-dot">
-                        {game.company === c ? <Check size={13} /> : null}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-                <div className="setup-row">
-                  <div>
-                    <h3>{t("players")}</h3>
-                    <span className="muted">2–8 {t("peopleShort")}</span>
-                  </div>
-                  <div className="stepper">
-                    <button
-                      aria-label={t("fewer")}
-                      disabled={game.players <= 2}
-                      onClick={() => patch({ players: game.players - 1 })}
-                    >
-                      <Minus size={18} />
-                    </button>
-                    <output>{game.players}</output>
-                    <button
-                      aria-label={t("more")}
-                      disabled={game.players >= 8}
-                      onClick={() => patch({ players: game.players + 1 })}
-                    >
-                      <Plus size={18} />
-                    </button>
-                  </div>
-                </div>
-                <div className="setup-row">
-                  <h3>{t("time")}</h3>
-                  <div className="segmented">
-                    {([5, 10] as const).map((n) => (
+                  {companies.map((c) => {
+                    const Icon = companyIcons[c];
+                    return (
                       <button
-                        key={n}
-                        className={game.minutes === n ? "active" : ""}
-                        aria-pressed={game.minutes === n}
-                        onClick={() => patch({ minutes: n })}
+                        key={c}
+                        className={`company-card ${game.company === c ? "selected" : ""}`}
+                        aria-pressed={game.company === c}
+                        aria-label={t(c)}
+                        onClick={() =>
+                          patch({
+                            company: c,
+                            players: c === "couple" ? 2 : game.players,
+                          })
+                        }
                       >
-                        {n} {t("minutesShort")}
+                        <Icon
+                          className="company-symbol"
+                          size={27}
+                          strokeWidth={1.3}
+                        />
+                        <span className="company-title">{t(c)}</span>
+                        <span className="company-character">
+                          {t(`${c}Desc`)}
+                        </span>
+                        <span className="selection-dot">
+                          {game.company === c ? <Check size={12} /> : null}
+                        </span>
                       </button>
-                    ))}
+                    );
+                  })}
+                </div>
+                <div className="settings-panel">
+                  <div className="setup-row player-row">
+                    <h2>{t("players")}</h2>
+                    <div
+                      className="player-choices"
+                      role="group"
+                      aria-label={t("players")}
+                    >
+                      {[2, 3, 4, 5, 6].map((n) => (
+                        <button
+                          key={n}
+                          className={
+                            (n === 6 ? game.players >= 6 : game.players === n)
+                              ? "active"
+                              : ""
+                          }
+                          aria-pressed={
+                            n === 6 ? game.players >= 6 : game.players === n
+                          }
+                          aria-label={
+                            n === 6
+                              ? t("morePlayers")
+                              : t("playerOption", { count: n })
+                          }
+                          onClick={() => patch({ players: n })}
+                        >
+                          {n === 6 ? "6+" : n}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {game.players >= 6 ? (
+                    <div className="large-group">
+                      <span>{t("exactPlayers")}</span>
+                      <div className="stepper">
+                        <button
+                          aria-label={t("fewer")}
+                          disabled={game.players <= 6}
+                          onClick={() => patch({ players: game.players - 1 })}
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <output>{game.players}</output>
+                        <button
+                          aria-label={t("more")}
+                          disabled={game.players >= 8}
+                          onClick={() => patch({ players: game.players + 1 })}
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="setup-row">
+                    <h2>{t("time")}</h2>
+                    <div className="segmented">
+                      {([5, 10] as const).map((n) => (
+                        <button
+                          key={n}
+                          className={game.minutes === n ? "active" : ""}
+                          aria-pressed={game.minutes === n}
+                          onClick={() => patch({ minutes: n })}
+                        >
+                          {n} {t("minutesShort")}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <p className="fine-print">{t("timeNote")}</p>
-                <button
-                  className="button primary full"
-                  onClick={() =>
-                    patch({
-                      screen: "mode",
-                      mode:
-                        game.players < 4 && game.mode === "battle"
-                          ? "connect"
-                          : game.mode,
-                    })
-                  }
-                >
-                  {t("next")}
-                  <ArrowRight size={19} />
-                </button>
+                <div className="action-zone">
+                  <button
+                    className="button primary full"
+                    onClick={() =>
+                      patch({
+                        screen: "mode",
+                        mode:
+                          game.players < 4 && game.mode === "battle"
+                            ? "connect"
+                            : game.mode,
+                      })
+                    }
+                  >
+                    {t("next")}
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
               </>
             ) : null}
             {screen === "mode" ? (
               <>
                 <div className="screen-heading">
-                  <span className="eyebrow">02 / TABLEQUEST</span>
+                  <span className="eyebrow">
+                    02 <span className="label-line" /> TABLEQUEST
+                  </span>
                   <h1>{t("modeTitle")}</h1>
                   <p>{t("modeDesc")}</p>
                 </div>
                 <div className="mode-list">
-                  {modes.map((mode) => {
+                  {modes.map((mode, i) => {
                     const Icon = modeIcons[mode];
                     return (
                       <button
                         key={mode}
                         disabled={mode === "battle" && game.players < 4}
+                        aria-describedby={
+                          mode === "battle" && game.players < 4
+                            ? "battle-min"
+                            : undefined
+                        }
                         className={`mode-card ${mode} ${game.mode === mode ? "selected" : ""}`}
                         aria-pressed={game.mode === mode}
                         onClick={() => patch({ mode })}
                       >
+                        <span className="mode-number">0{i + 1}</span>
                         <span className="mode-icon">
-                          <Icon size={28} />
+                          <Icon size={29} strokeWidth={1.2} />
                         </span>
                         <span className="mode-content">
                           <span className="eyebrow">{t(`${mode}Tag`)}</span>
                           <strong>{t(mode)}</strong>
-                          <span>{t(`${mode}Desc`)}</span>
+                          <span>{modeDescription(mode)}</span>
                         </span>
                         <span className="selection-dot">
-                          {game.mode === mode ? <Check size={14} /> : null}
+                          {game.mode === mode ? <Check size={12} /> : null}
                         </span>
                       </button>
                     );
                   })}
                 </div>
                 {game.players < 4 ? (
-                  <p className="fine-print">{t("battleMin")}</p>
+                  <p className="fine-print" id="battle-min">
+                    {t("battleMin")}
+                  </p>
+                ) : null}
+                {game.mode === "battle" ? (
+                  <details className="team-settings">
+                    <summary>
+                      {t("teamSettings")}
+                      <ChevronDown size={16} />
+                    </summary>
+                    <p>{t("teamsDesc")}</p>
+                    {teamFields}
+                  </details>
                 ) : null}
                 <div className="summary-chips">
                   <span>{t(game.company)}</span>
@@ -506,47 +523,21 @@ export default function App() {
                   </span>
                 </div>
                 {error ? <p role="alert">{t("noQuests")}</p> : null}
-                <button className="button primary full" onClick={start}>
-                  {t("begin")}
-                  <Sparkles size={18} />
-                </button>
+                <div className="action-zone">
+                  <button className="button primary full" onClick={start}>
+                    {t("begin")}
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
               </>
             ) : null}
             {screen === "teams" ? (
               <>
                 <div className="screen-heading">
-                  <span className="big-symbol lavender">
-                    <Swords />
-                  </span>
                   <h1>{t("teamsTitle")}</h1>
                   <p>{t("teamsDesc")}</p>
                 </div>
-                <div className="teams-grid">
-                  {([0, 1] as const).map((i) => (
-                    <label className="team-field field" key={i}>
-                      <strong>{t(i === 0 ? "teamA" : "teamB")}</strong>
-                      <input
-                        aria-label={`${t("teamName")} ${i === 0 ? "A" : "B"}`}
-                        value={game.teams[i]}
-                        placeholder={t(i === 0 ? "teamA" : "teamB")}
-                        maxLength={24}
-                        onChange={(e) => {
-                          const names: [string, string] = [...game.teams];
-                          names[i] = e.target.value;
-                          patch({ teams: names });
-                        }}
-                      />
-                      <span>
-                        {t("teamCount", {
-                          count:
-                            i === 0
-                              ? Math.ceil(game.players / 2)
-                              : Math.floor(game.players / 2),
-                        })}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                {teamFields}
                 <button
                   className="button primary full"
                   onClick={() =>
@@ -557,7 +548,7 @@ export default function App() {
                   }
                 >
                   {t("begin")}
-                  <ArrowRight size={19} />
+                  <ArrowRight size={18} />
                 </button>
               </>
             ) : null}
@@ -565,33 +556,37 @@ export default function App() {
               <>
                 <div className={`quest-card ${game.mode}`}>
                   <div className="quest-top">
-                    <span>{t(game.mode)}</span>
+                    <span className="mode-label">{t(game.mode)}</span>
                     <span>
-                      <Clock3 size={16} />
+                      <Clock3 size={14} />
                       {roundSeconds(game)} {t("secondsShort")}
                     </span>
                   </div>
-                  <span className="quest-spark" aria-hidden="true">
-                    ✦
-                  </span>
-                  <h1>{current.title[locale]}</h1>
-                  <p>{current.text[locale]}</p>
+                  <span className="quest-title">{current.title[locale]}</span>
+                  <h1>{current.prompt[locale]}</h1>
+                  <p className="quest-instruction">
+                    {current.instruction[locale]}
+                  </p>
                   <div className="quest-foot">
-                    <MessageCircle size={17} />
+                    <span className="tiny-star">✧</span>
                     {t("instruction")}
                   </div>
                 </div>
                 {game.mode === "battle" ? scoreBoard : null}
-                <button className="button primary full" onClick={beginTimer}>
-                  {t("go")}
-                  <ArrowRight size={19} />
-                </button>
+                <div className="action-zone">
+                  <button className="button primary full" onClick={beginTimer}>
+                    {t("go")}
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
               </>
             ) : null}
             {screen === "timer" ? (
               <div className="timer-screen">
-                <span className="phone-symbol">
-                  <Smartphone size={30} />
+                <span
+                  className={`phone-symbol ${left > 0 && game.deadline !== null ? "breathing" : ""}`}
+                >
+                  <Smartphone size={29} strokeWidth={1.2} />
                 </span>
                 <h1>{t(left === 0 ? "timeUp" : "phoneDown")}</h1>
                 <p>{t(left === 0 ? "timeUpDesc" : "timerDesc")}</p>
@@ -600,7 +595,7 @@ export default function App() {
                   style={
                     {
                       "--progress": `${(left / roundSeconds(game)) * 100}%`,
-                    } as React.CSSProperties
+                    } as CSSProperties
                   }
                 >
                   <div>
@@ -614,11 +609,9 @@ export default function App() {
                     </span>
                     <span>
                       {t(
-                        left === 0
-                          ? "timeUp"
-                          : game.deadline === null
-                            ? "paused"
-                            : "together",
+                        game.deadline === null && left > 0
+                          ? "paused"
+                          : "timerCaption",
                       )}
                     </span>
                   </div>
@@ -628,16 +621,22 @@ export default function App() {
                 </div>
                 <div className="timer-actions">
                   {left > 0 ? (
-                    <button className="button secondary" onClick={pauseTimer}>
+                    <button
+                      className="text-button pause-button"
+                      onClick={pauseTimer}
+                    >
                       {game.deadline === null ? (
-                        <Play size={18} />
+                        <Play size={15} />
                       ) : (
-                        <Pause size={18} />
-                      )}
+                        <Pause size={15} />
+                      )}{" "}
                       {t(game.deadline === null ? "continue" : "pause")}
                     </button>
                   ) : null}
-                  <button className="button primary" onClick={finishRound}>
+                  <button
+                    className={`button ${left === 0 ? "primary" : "secondary"}`}
+                    onClick={finishRound}
+                  >
                     {t(
                       left > 0
                         ? "done"
@@ -647,17 +646,15 @@ export default function App() {
                             ? "finish"
                             : "nextRound",
                     )}
-                    <Check size={18} />
+                    <ArrowRight size={17} />
                   </button>
                 </div>
               </div>
             ) : null}
             {screen === "score" ? (
               <>
-                <div className="screen-heading">
-                  <span className="big-symbol peach">
-                    <Trophy />
-                  </span>
+                <div className="screen-heading centered-heading">
+                  <span className="eyebrow">TEAM BATTLE</span>
                   <h1>{t("scoreTitle")}</h1>
                   <p>{t("scoreDesc")}</p>
                 </div>
@@ -665,12 +662,12 @@ export default function App() {
                 <div className="score-actions">
                   {([0, 1] as const).map((i) => (
                     <button
-                      className="button secondary"
                       key={i}
+                      className={`button secondary team-${i}`}
                       onClick={() => setGame((g) => advance(g, i))}
                     >
-                      {team(i)}
-                      <Plus size={16} />1
+                      <span>{team(i)}</span>
+                      <span>+1</span>
                     </button>
                   ))}
                 </div>
@@ -684,82 +681,109 @@ export default function App() {
             ) : null}
             {screen === "result" ? (
               <>
-                <div className="screen-heading result-heading">
-                  <span className="big-symbol peach">
-                    <Trophy size={32} />
-                  </span>
-                  <span className="eyebrow">{t("resultTag")}</span>
-                  <h1>
-                    {game.mode === "battle"
-                      ? game.scores[0] === game.scores[1]
-                        ? t("tied")
-                        : t("winner", {
-                            team: team(game.scores[0] > game.scores[1] ? 0 : 1),
-                          })
-                      : t("resultTitle")}
-                  </h1>
+                <div className={`memory-card ${game.mode}`}>
+                  <div className="memory-top">
+                    <span>TABLEQUEST</span>
+                    <span className="mode-label">{t(game.mode)}</span>
+                  </div>
+                  <div className="memory-seal">
+                    <Wine size={25} strokeWidth={1.2} />
+                  </div>
+                  <div className="screen-heading result-heading">
+                    <span className="eyebrow">{t("resultTag")}</span>
+                    <h1>
+                      {game.mode === "battle"
+                        ? game.scores[0] === game.scores[1]
+                          ? t("tied")
+                          : t("winner", {
+                              team: team(
+                                game.scores[0] > game.scores[1] ? 0 : 1,
+                              ),
+                            })
+                        : t(game.mode === "fun" ? "crewFun" : "crewConnect")}
+                    </h1>
+                    <p>{t("resultTitle")}</p>
+                  </div>
+                  {game.mode === "battle" ? scoreBoard : null}
+                  <div className="stats">
+                    <div>
+                      <strong>{game.questIds.length}</strong>
+                      <span>{t("completed")}</span>
+                    </div>
+                    <div>
+                      <strong>
+                        {Math.max(
+                          1,
+                          Math.round(
+                            ((game.finishedAt ?? Date.now()) -
+                              (game.startedAt ?? Date.now())) /
+                              60000,
+                          ),
+                        )}
+                      </strong>
+                      <span>{t("together")}</span>
+                    </div>
+                    <div>
+                      <strong>{game.players}</strong>
+                      <span>{t("peopleShort")}</span>
+                    </div>
+                  </div>
+                  <div className="memory-signoff">
+                    <span className="tiny-star">✧</span>
+                    {t("endCaption")}
+                  </div>
                 </div>
-                {game.mode === "battle" ? scoreBoard : null}
-                <div className="stats">
-                  <div>
-                    <strong>{game.questIds.length}</strong>
-                    <span>{t("completed")}</span>
-                  </div>
-                  <div>
-                    <strong>
-                      {Math.max(
-                        1,
-                        Math.round(
-                          ((game.finishedAt ?? Date.now()) -
-                            (game.startedAt ?? Date.now())) /
-                            60000,
-                        ),
-                      )}
-                    </strong>
-                    <span>{t("together")}</span>
-                  </div>
-                  <div>
-                    <strong>{game.players}</strong>
-                    <span>{t("peopleShort")}</span>
-                  </div>
-                </div>
-                <h3 className="recap-title">{t("recap")}</h3>
-                <ul className="recap-list">
-                  {game.questIds.map((id) => (
-                    <li key={id}>
-                      <CheckCircle2 size={18} />
-                      {quests.find((q) => q.id === id)?.title[locale]}
-                    </li>
-                  ))}
-                </ul>
+                <details className="recap-details">
+                  <summary>
+                    {t("recap")}
+                    <ChevronDown size={17} />
+                  </summary>
+                  <ul className="recap-list">
+                    {game.questIds.map((id) => (
+                      <li key={id}>
+                        <CheckCircle2 size={16} />
+                        {quests.find((q) => q.id === id)?.title[locale]}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
                 <div className="reward-card">
-                  <Sparkles size={28} />
+                  <Trophy size={23} strokeWidth={1.3} />
                   <div>
-                    <h3>{t("reward")}</h3>
+                    <h2>{t("reward")}</h2>
                     <p>{t("rewardDesc")}</p>
                     <small>{t("rewardNote")}</small>
                   </div>
                 </div>
-                <button className="button primary full" onClick={fresh}>
-                  {t("again")}
-                  <ArrowRight size={19} />
-                </button>
-                <button
-                  className="text-button centered"
-                  onClick={() => patch({ screen: "feedback" })}
-                >
-                  {t("feedback")}
-                </button>
+                <div className="result-actions">
+                  <button className="button primary full" onClick={start}>
+                    {t("again")}
+                    <RotateCcw size={17} />
+                  </button>
+                  <button
+                    className="button secondary full"
+                    onClick={differentMode}
+                  >
+                    {t("otherMode")}
+                    <ArrowRight size={17} />
+                  </button>
+                  <button
+                    className="text-button centered"
+                    onClick={() => patch({ screen: "feedback" })}
+                  >
+                    {t("finishExperience")}
+                  </button>
+                </div>
               </>
             ) : null}
             {screen === "feedback" ? (
               <>
-                <div className="screen-heading">
-                  <span className="big-symbol peach">
-                    <Heart />
+                <div className="screen-heading centered-heading">
+                  <span className="memory-seal">
+                    <Heart size={25} strokeWidth={1.2} />
                   </span>
                   <h1>{t(submitted ? "thanks" : "feedbackTitle")}</h1>
-                  <p>{t(submitted ? "localFeedback" : "feedbackDesc")}</p>
+                  <p>{t(submitted ? "tagline" : "feedbackDesc")}</p>
                 </div>
                 {submitted ? (
                   <button
@@ -767,14 +791,18 @@ export default function App() {
                     onClick={() => setShowWelcome(true)}
                   >
                     {t("home")}
+                    <ArrowRight size={17} />
                   </button>
                 ) : (
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
                       if (rating === null || repeat === null) return;
-                      const previous = readStorage("tablequest.feedback");
-                      const saved = saveStorage("tablequest.feedback", [
+                      const feedbackKey = isDemo
+                        ? "tablequest.demo.feedback"
+                        : "tablequest.feedback";
+                      const previous = readStorage(feedbackKey);
+                      const saved = saveStorage(feedbackKey, [
                         ...(Array.isArray(previous) ? previous.slice(-49) : []),
                         {
                           rating,
@@ -788,45 +816,47 @@ export default function App() {
                       else setStorageOkay(false);
                     }}
                   >
-                    <div className="rating-options">
-                      {(["ratingBad", "ratingOkay", "ratingGood"] as const).map(
-                        (key, i) => (
+                    <fieldset className="rating-fieldset">
+                      <legend className="sr-only">{t("feedbackTitle")}</legend>
+                      <div className="rating-options">
+                        {(
+                          ["ratingGood", "ratingOkay", "ratingBad"] as const
+                        ).map((key, i) => (
                           <button
-                            className={rating === i ? "selected" : ""}
-                            key={key}
                             type="button"
-                            aria-pressed={rating === i}
-                            onClick={() => setRating(i)}
+                            key={key}
+                            aria-pressed={rating === 2 - i}
+                            className={rating === 2 - i ? "selected" : ""}
+                            onClick={() => setRating(2 - i)}
                           >
-                            <span aria-hidden="true">
-                              {["😕", "🙂", "🤩"][i]}
-                            </span>
                             {t(key)}
                           </button>
-                        ),
-                      )}
-                    </div>
-                    <h3>{t("repeat")}</h3>
-                    <div className="repeat-options">
-                      {(["yes", "maybe", "no"] as const).map((key) => (
-                        <button
-                          type="button"
-                          className={`button secondary ${repeat === key ? "selected" : ""}`}
-                          key={key}
-                          aria-pressed={repeat === key}
-                          onClick={() => setRepeat(key)}
-                        >
-                          {t(key)}
-                        </button>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <fieldset className="repeat-fieldset">
+                      <legend>{t("repeat")}</legend>
+                      <div className="repeat-options">
+                        {(["yes", "maybe", "no"] as const).map((key) => (
+                          <button
+                            type="button"
+                            className={`button secondary ${repeat === key ? "selected" : ""}`}
+                            key={key}
+                            aria-pressed={repeat === key}
+                            onClick={() => setRepeat(key)}
+                          >
+                            {t(key)}
+                          </button>
+                        ))}
+                      </div>
+                    </fieldset>
                     <p className="fine-print">{t("localFeedback")}</p>
                     <button
                       className="button primary full"
                       disabled={rating === null || repeat === null}
                     >
                       {t("submit")}
-                      <Check size={18} />
+                      <Check size={17} />
                     </button>
                   </form>
                 )}
@@ -836,45 +866,57 @@ export default function App() {
         )}
       </main>
       <footer>
-        <span>
-          <Coffee size={17} />
-          {t("footer")}
+        <span className="footer-star" aria-hidden="true">
+          ✧
         </span>
-        <div className="footer-features">
-          <span>
-            <ShieldCheck size={15} />
-            {t("noLogin")}
-          </span>
-          <span>
-            <CheckCircle2 size={15} />
-            {t("offlineFeature")}
-          </span>
-        </div>
-        <button className="text-button" onClick={() => setQrOpen(true)}>
-          <QrCode size={17} />
-          {t("qr")}
-          <ChevronRight size={15} />
-        </button>
+        <span>{t("footer")}</span>
+        <span className="footer-wordmark">TABLEQUEST</span>
       </footer>
-      {offlineReady || needRefresh ? (
-        <aside className="pwa-toast" role="status">
-          <span>{t(needRefresh ? "update" : "offlineReady")}</span>
+      {menuOpen ? (
+        <Modal
+          title={t("menu")}
+          close={() => setMenuOpen(false)}
+          closeLabel={t("close")}
+        >
+          <h3 className="menu-heading">{t("aboutTitle")}</h3>
+          <p>{t("aboutBody")}</p>
+          <div className="menu-links">
+            <button
+              className="button secondary full"
+              onClick={() => {
+                setMenuOpen(false);
+                setQrOpen(true);
+              }}
+            >
+              <QrCode size={18} />
+              {t("qr")}
+              <ArrowRight size={16} />
+            </button>
+            <a
+              className="text-button"
+              href={`${import.meta.env.BASE_URL}?demo=true`}
+            >
+              {t("demoFun")}
+            </a>
+            <a
+              className="text-button"
+              href={`${import.meta.env.BASE_URL}?demo=true&mode=battle`}
+            >
+              {t("demoBattle")}
+            </a>
+          </div>
+          {offlineReady ? (
+            <p className="fine-print">{t("offlineReady")}</p>
+          ) : null}
           {needRefresh ? (
-            <button onClick={() => void updateServiceWorker(true)}>
+            <button
+              className="button secondary full"
+              onClick={() => void updateServiceWorker(true)}
+            >
               {t("updateButton")}
             </button>
           ) : null}
-          <button
-            className="icon-button"
-            aria-label={t("later")}
-            onClick={() => {
-              setOfflineReady(false);
-              setNeedRefresh(false);
-            }}
-          >
-            <X size={18} />
-          </button>
-        </aside>
+        </Modal>
       ) : null}
       {qrOpen ? <QRModal t={t} close={() => setQrOpen(false)} /> : null}
       {resetOpen ? (
@@ -884,7 +926,7 @@ export default function App() {
           closeLabel={t("close")}
         >
           <p>{t("restartDesc")}</p>
-          <div className="timer-actions">
+          <div className="dialog-actions">
             <button
               className="button secondary"
               onClick={() => setResetOpen(false)}

@@ -59,3 +59,28 @@ jobs:
                   print('OK:', response.url)
           print('Published HTML, JS, CSS, manifest and service worker verified.')
           PY
+  public-e2e:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify public mobile and desktop guest journeys
+        run: npm run test:e2e
+        env:
+          PLAYWRIGHT_BASE_URL: https://noob1minecraft.github.io/tablequest/
+      - name: Save public screenshots and failure traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-browser-review
+          path: |
+            artifacts/
+            test-results/
+          retention-days: 7

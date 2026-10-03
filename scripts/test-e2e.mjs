@@ -3,9 +3,11 @@
 import { preview } from "vite";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
-const server = await preview({
-  preview: { host: "127.0.0.1", port: 4173, strictPort: true },
-});
+const server = process.env.PLAYWRIGHT_BASE_URL
+  ? null
+  : await preview({
+      preview: { host: "127.0.0.1", port: 4173, strictPort: true },
+    });
 try {
   const cli = fileURLToPath(
     new URL("../node_modules/@playwright/test/cli.js", import.meta.url),
@@ -20,7 +22,8 @@ try {
     child.once("exit", (code) => resolve(code ?? 1));
   });
 } finally {
-  await new Promise((resolve, reject) =>
-    server.httpServer.close((error) => (error ? reject(error) : resolve())),
-  );
+  if (server)
+    await new Promise((resolve, reject) =>
+      server.httpServer.close((error) => (error ? reject(error) : resolve())),
+    );
 }

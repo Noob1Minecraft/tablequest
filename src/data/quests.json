@@ -11,9 +11,19 @@
       "en": "The little things"
     },
     "text": {
-      "ru": "По очереди расскажите о маленькой вещи, которая порадовала вас на этой неделе. Остальные могут задать по одному вопросу.",
-      "kk": "Осы аптада қуантқан кішкентай нәрсе туралы кезекпен айтыңыздар. Қалғандары бір-бір сұрақ қоя алады.",
-      "en": "Take turns sharing one small thing that made you happy this week. Everyone else may ask one follow-up question."
+      "ru": "Какая мелочь порадовала вас на этой неделе? Расскажите по очереди. Спросите друг друга о деталях.",
+      "kk": "Осы аптада сізді не қуантты? Кезекпен айтып, бір-біріңізге сұрақ қойыңыздар.",
+      "en": "What little thing made you happy this week? Take turns sharing. Ask each other about the details."
+    },
+    "prompt": {
+      "ru": "Какая мелочь порадовала вас на этой неделе?",
+      "kk": "Осы аптада сізді не қуантты?",
+      "en": "What little thing made you happy this week?"
+    },
+    "instruction": {
+      "ru": "Расскажите по очереди. Спросите друг друга о деталях.",
+      "kk": "Кезекпен айтып, бір-біріңізге сұрақ қойыңыздар.",
+      "en": "Take turns sharing. Ask each other about the details."
     }
   },
   {
@@ -28,9 +38,19 @@
       "en": "A ticket anywhere"
     },
     "text": {
-      "ru": "У вас есть бесплатный билет в любое место на один день. Куда отправитесь и что сделаете первым делом? Пусть каждый поделится своим маршрутом.",
-      "kk": "Кез келген жерге бір күнге тегін билетіңіз бар. Қайда барасыз және алдымен не істейсіз? Әркім өз бағытын айтсын.",
-      "en": "You have a free ticket anywhere for one day. Where would you go and what would you do first? Let everyone share their itinerary."
+      "ru": "Один день где угодно. Куда отправитесь? Каждый называет место и первое, что там сделает.",
+      "kk": "Бір күнге қайда барғыңыз келеді? Әркім бір жерді және онда не істейтінін айтсын.",
+      "en": "One day, anywhere. Where would you go? Name a place and the first thing you’d do there."
+    },
+    "prompt": {
+      "ru": "Один день где угодно. Куда отправитесь?",
+      "kk": "Бір күнге қайда барғыңыз келеді?",
+      "en": "One day, anywhere. Where would you go?"
+    },
+    "instruction": {
+      "ru": "Каждый называет место и первое, что там сделает.",
+      "kk": "Әркім бір жерді және онда не істейтінін айтсын.",
+      "en": "Name a place and the first thing you’d do there."
     }
   },
   {
@@ -45,9 +65,19 @@
       "en": "Your neighbour’s superpower"
     },
     "text": {
-      "ru": "Назовите качество человека слева, которое вам нравится, и приведите маленький пример. Передайте слово по кругу. Только добрые слова!",
-      "kk": "Сол жақтағы адамның ұнайтын қасиетін атап, шағын мысал келтіріңіз. Сөзді кезекпен беріңіздер. Тек жылы сөздер!",
-      "en": "Name a quality you appreciate in the person on your left and give a small example. Go around the table. Kind words only!"
+      "ru": "В чём суперсила человека слева? Назовите одну хорошую черту. Передайте слово по кругу.",
+      "kk": "Сол жақтағы адамның қандай жақсы қасиеті бар? Бір жақсы қасиетін атап, сөзді келесі адамға беріңіз.",
+      "en": "What’s the superpower of the person on your left? Name one quality you appreciate. Go around the table."
+    },
+    "prompt": {
+      "ru": "В чём суперсила человека слева?",
+      "kk": "Сол жақтағы адамның қандай жақсы қасиеті бар?",
+      "en": "What’s the superpower of the person on your left?"
+    },
+    "instruction": {
+      "ru": "Назовите одну хорошую черту. Передайте слово по кругу.",
+      "kk": "Бір жақсы қасиетін атап, сөзді келесі адамға беріңіз.",
+      "en": "Name one quality you appreciate. Go around the table."
     }
   },
   {
@@ -62,9 +92,19 @@
       "en": "A taste of a memory"
     },
     "text": {
-      "ru": "Какое блюдо напоминает вам о хорошем моменте? Расскажите, где вы были и с кем. Найдите что-то общее в ваших историях.",
-      "kk": "Қай тағам жақсы сәтті еске түсіреді? Қайда және кіммен болғаныңызды айтыңыз. Әңгімелеріңізден ортақ нәрсе табыңыздар.",
-      "en": "Which dish reminds you of a happy moment? Tell everyone where you were and who you were with. Find something your stories have in common."
+      "ru": "Какое блюдо возвращает вас в хороший момент? Вспомните, где вы были и с кем. По одной истории от каждого.",
+      "kk": "Қай тағам жақсы сәтті еске түсіреді? Қайда, кіммен болғаныңызды еске түсіріңіз. Әркім бір әңгіме айтсын.",
+      "en": "What food takes you back to a happy moment? Where were you, and with whom? Share one memory each."
+    },
+    "prompt": {
+      "ru": "Какое блюдо возвращает вас в хороший момент?",
+      "kk": "Қай тағам жақсы сәтті еске түсіреді?",
+      "en": "What food takes you back to a happy moment?"
+    },
+    "instruction": {
+      "ru": "Вспомните, где вы были и с кем. По одной истории от каждого.",
+      "kk": "Қайда, кіммен болғаныңызды еске түсіріңіз. Әркім бір әңгіме айтсын.",
+      "en": "Where were you, and with whom? Share one memory each."
     }
   },
   {
@@ -79,9 +119,19 @@
       "en": "Unexpected common ground"
     },
     "text": {
-      "ru": "Найдите три вещи, которые нравятся всем за столом. Еда, музыка, места — что угодно. Не используйте очевидное: «мы любим отдыхать» не считается!",
-      "kk": "Дастарқан басындағы бәріне ұнайтын үш нәрсені табыңыздар. Тағам, музыка, жерлер — кез келгені. «Демалғанды жақсы көреміз» сияқты айқын жауаптар есептелмейді!",
-      "en": "Find three things everyone at the table enjoys. Food, music, places — anything goes. Skip the obvious: ‘we like relaxing’ doesn’t count!"
+      "ru": "Что нравится всем за этим столом? Найдите три неочевидных совпадения: еда, музыка, места.",
+      "kk": "Осы дастарқандағы бәріне не ұнайды? Тағам, музыка не жерлерден үш ортақ талғам табыңыздар.",
+      "en": "What does everyone at this table love? Find three unexpected things in common: food, music, places."
+    },
+    "prompt": {
+      "ru": "Что нравится всем за этим столом?",
+      "kk": "Осы дастарқандағы бәріне не ұнайды?",
+      "en": "What does everyone at this table love?"
+    },
+    "instruction": {
+      "ru": "Найдите три неочевидных совпадения: еда, музыка, места.",
+      "kk": "Тағам, музыка не жерлерден үш ортақ талғам табыңыздар.",
+      "en": "Find three unexpected things in common: food, music, places."
     }
   },
   {
@@ -90,11 +140,25 @@
     "category": ["any"],
     "minPlayers": 2,
     "maxPlayers": 8,
-    "title": { "ru": "Новый навык", "kk": "Жаңа дағды", "en": "A new skill" },
+    "title": {
+      "ru": "Новый навык",
+      "kk": "Жаңа дағды",
+      "en": "A new skill"
+    },
     "text": {
-      "ru": "Какой навык вы бы освоили за одну ночь? Каждый объясняет свой выбор. Вместе придумайте, что вы могли бы сделать с этими навыками.",
-      "kk": "Бір түнде қандай дағдыны меңгерер едіңіз? Әркім таңдауын түсіндірсін. Осы дағдылармен бірге не істей алатыныңызды ойластырыңыздар.",
-      "en": "What skill would you learn overnight? Explain your choices, then imagine what you could create together with all those skills."
+      "ru": "Один новый навык за ночь. Что выберете? Поделитесь выбором. Что вы могли бы сделать вместе?",
+      "kk": "Бір түнде нені үйренгіңіз келеді? Таңдауыңызды айтыңыз. Бірге не істей алар едіңіздер?",
+      "en": "One new skill overnight. What would you choose? Share your choices. What could you create together?"
+    },
+    "prompt": {
+      "ru": "Один новый навык за ночь. Что выберете?",
+      "kk": "Бір түнде нені үйренгіңіз келеді?",
+      "en": "One new skill overnight. What would you choose?"
+    },
+    "instruction": {
+      "ru": "Поделитесь выбором. Что вы могли бы сделать вместе?",
+      "kk": "Таңдауыңызды айтыңыз. Бірге не істей алар едіңіздер?",
+      "en": "Share your choices. What could you create together?"
     }
   },
   {
@@ -109,9 +173,19 @@
       "en": "One word at a time"
     },
     "text": {
-      "ru": "Сочините историю о самом необычном ресторане. Каждый по кругу добавляет только одно слово. Постарайтесь довести историю до финала!",
-      "kk": "Ең ерекше мейрамхана туралы әңгіме құрастырыңыздар. Әркім кезекпен тек бір сөз қосады. Әңгімені соңына жеткізіп көріңіздер!",
-      "en": "Create a story about the world’s strangest restaurant. Each person adds just one word at a time. Try to give it an ending!"
+      "ru": "Одна история. По одному слову. По кругу сочините историю о самом странном ресторане. Каждому — одно слово.",
+      "kk": "Бір әңгіме. Бір-бір сөзден. Ең ерекше мейрамхана туралы әңгіме құраңыздар. Әркім кезекпен бір сөз қоссын.",
+      "en": "One story. One word at a time. Go around the table inventing the strangest restaurant story. One word each."
+    },
+    "prompt": {
+      "ru": "Одна история. По одному слову.",
+      "kk": "Бір әңгіме. Бір-бір сөзден.",
+      "en": "One story. One word at a time."
+    },
+    "instruction": {
+      "ru": "По кругу сочините историю о самом странном ресторане. Каждому — одно слово.",
+      "kk": "Ең ерекше мейрамхана туралы әңгіме құраңыздар. Әркім кезекпен бір сөз қоссын.",
+      "en": "Go around the table inventing the strangest restaurant story. One word each."
     }
   },
   {
@@ -126,9 +200,19 @@
       "en": "The napkin pitch"
     },
     "text": {
-      "ru": "По очереди прорекламируйте обычную салфетку как изобретение века. У каждого 15 секунд. Чем нелепее преимущества, тем лучше.",
-      "kk": "Кәдімгі майлықты ғасыр жаңалығы ретінде кезекпен жарнамалаңыздар. Әркімге 15 секунд. Артықшылықтары неғұрлым күлкілі болса, соғұрлым жақсы.",
-      "en": "Take turns pitching an ordinary napkin as the invention of the century. You each get 15 seconds. The sillier the features, the better."
+      "ru": "Продайте нам эту салфетку. Будто это изобретение века. По 15 секунд на рекламу, чем нелепее — тем лучше.",
+      "kk": "Осы майлықты жарнамалаңыз. Ғасыр жаңалығы сияқты. Әркімге 15 секунд. Неғұрлым күлкілі болса, соғұрлым жақсы.",
+      "en": "Sell us this napkin. As if it’s the invention of the century. 15 seconds each. The sillier, the better."
+    },
+    "prompt": {
+      "ru": "Продайте нам эту салфетку.",
+      "kk": "Осы майлықты жарнамалаңыз.",
+      "en": "Sell us this napkin."
+    },
+    "instruction": {
+      "ru": "Будто это изобретение века. По 15 секунд на рекламу, чем нелепее — тем лучше.",
+      "kk": "Ғасыр жаңалығы сияқты. Әркімге 15 секунд. Неғұрлым күлкілі болса, соғұрлым жақсы.",
+      "en": "As if it’s the invention of the century. 15 seconds each. The sillier, the better."
     }
   },
   {
@@ -137,11 +221,25 @@
     "category": ["any"],
     "minPlayers": 2,
     "maxPlayers": 8,
-    "title": { "ru": "Без слов", "kk": "Сөзсіз", "en": "Without a word" },
+    "title": {
+      "ru": "Без слов",
+      "kk": "Сөзсіз",
+      "en": "Without a word"
+    },
     "text": {
-      "ru": "Каждый по очереди молча изображает приготовление любимого блюда. Остальные угадывают. Оставайтесь на своих местах и не трогайте горячую посуду.",
-      "kk": "Әркім сүйікті тағамын дайындауды үнсіз көрсетеді. Қалғандары табады. Орындарыңызда отырып, ыстық ыдысқа тимеңіздер.",
-      "en": "Take turns silently acting out cooking your favourite dish. Everyone else guesses. Stay seated and leave hot dishes alone."
+      "ru": "Приготовьте любимое блюдо. Без слов. Показывайте жестами, остальные угадывают. Сидя и не трогая посуду.",
+      "kk": "Сүйікті тағамыңызды сөзсіз көрсетіңіз. Қимылмен көрсетіңіз, қалғандары тапсын. Отырып ойнаңыздар, ыдысты ұстамаңыздар.",
+      "en": "Cook your favourite dish. Without a word. Mime it while the others guess. Stay seated and leave the tableware alone."
+    },
+    "prompt": {
+      "ru": "Приготовьте любимое блюдо. Без слов.",
+      "kk": "Сүйікті тағамыңызды сөзсіз көрсетіңіз.",
+      "en": "Cook your favourite dish. Without a word."
+    },
+    "instruction": {
+      "ru": "Показывайте жестами, остальные угадывают. Сидя и не трогая посуду.",
+      "kk": "Қимылмен көрсетіңіз, қалғандары тапсын. Отырып ойнаңыздар, ыдысты ұстамаңыздар.",
+      "en": "Mime it while the others guess. Stay seated and leave the tableware alone."
     }
   },
   {
@@ -156,9 +254,19 @@
       "en": "A ridiculous menu"
     },
     "text": {
-      "ru": "Придумайте по блюду для ресторана на Луне: название, ингредиенты и смешную цену. Затем вместе выберите фирменное блюдо.",
-      "kk": "Айдағы мейрамханаға әркім бір тағам ойлап тапсын: атауы, құрамы және күлкілі бағасы. Содан кейін басты тағамды бірге таңдаңыздар.",
-      "en": "Invent a dish for a restaurant on the Moon: its name, ingredients, and a funny price. Then choose the house special together."
+      "ru": "Что подают в ресторане на Луне? Придумайте по блюду и смешной цене. Выберите фирменное блюдо вместе.",
+      "kk": "Айдағы мейрамханада не береді? Әркім бір тағам мен күлкілі баға ұсынсын. Басты тағамды бірге таңдаңыздар.",
+      "en": "What’s on the menu on the Moon? Invent a dish and a funny price each. Pick the house special together."
+    },
+    "prompt": {
+      "ru": "Что подают в ресторане на Луне?",
+      "kk": "Айдағы мейрамханада не береді?",
+      "en": "What’s on the menu on the Moon?"
+    },
+    "instruction": {
+      "ru": "Придумайте по блюду и смешной цене. Выберите фирменное блюдо вместе.",
+      "kk": "Әркім бір тағам мен күлкілі баға ұсынсын. Басты тағамды бірге таңдаңыздар.",
+      "en": "Invent a dish and a funny price each. Pick the house special together."
     }
   },
   {
@@ -173,9 +281,19 @@
       "en": "The mood forecast"
     },
     "text": {
-      "ru": "Каждый делает короткий прогноз погоды о своём настроении голосом телеведущего. Например: «Ожидается сильный голод с прояснениями после десерта».",
-      "kk": "Әркім тележүргізушінің дауысымен өз көңіл күйіне ауа райы болжамын жасасын. Мысалы: «Қатты аштық күтіледі, десерттен кейін күн ашылады».",
-      "en": "Give a short weather forecast for your mood in a presenter’s voice. For example: ‘Heavy hunger expected, clearing up after dessert.’"
+      "ru": "Прогноз погоды… вашего настроения. По очереди станьте ведущим: «Голод с прояснениями после десерта».",
+      "kk": "Көңіл күйіңізге ауа райы болжамын жасаңыз. Кезекпен жүргізуші болыңыз: «Аштық күтіледі, десерттен кейін күн ашылады».",
+      "en": "The weather forecast… for your mood. Take turns as a presenter: “Heavy hunger, clearing up after dessert.”"
+    },
+    "prompt": {
+      "ru": "Прогноз погоды… вашего настроения.",
+      "kk": "Көңіл күйіңізге ауа райы болжамын жасаңыз.",
+      "en": "The weather forecast… for your mood."
+    },
+    "instruction": {
+      "ru": "По очереди станьте ведущим: «Голод с прояснениями после десерта».",
+      "kk": "Кезекпен жүргізуші болыңыз: «Аштық күтіледі, десерттен кейін күн ашылады».",
+      "en": "Take turns as a presenter: “Heavy hunger, clearing up after dessert.”"
     }
   },
   {
@@ -190,9 +308,19 @@
       "en": "A new tradition"
     },
     "text": {
-      "ru": "Придумайте смешное приветствие вашей компании из трёх жестов. Каждый добавляет один элемент. Повторите всё вместе, не вставая из-за стола.",
-      "kk": "Үш қимылдан тұратын күлкілі амандасу ойлап табыңыздар. Әркім бір элемент қоссын. Үстелден тұрмай, бәрін бірге қайталаңыздар.",
-      "en": "Invent a funny three-gesture greeting for your group. Take turns adding an element. Try it together without leaving the table."
+      "ru": "Ваше фирменное приветствие? Придумайте три простых жеста. Повторите вместе, не вставая.",
+      "kk": "Сіздердің ерекше амандасуларыңыз қандай? Үш қарапайым қимыл ойлап табыңыздар. Отырған күйі бірге қайталаңыздар.",
+      "en": "Your own signature greeting? Invent three simple gestures. Try them together, staying seated."
+    },
+    "prompt": {
+      "ru": "Ваше фирменное приветствие?",
+      "kk": "Сіздердің ерекше амандасуларыңыз қандай?",
+      "en": "Your own signature greeting?"
+    },
+    "instruction": {
+      "ru": "Придумайте три простых жеста. Повторите вместе, не вставая.",
+      "kk": "Үш қарапайым қимыл ойлап табыңыздар. Отырған күйі бірге қайталаңыздар.",
+      "en": "Invent three simple gestures. Try them together, staying seated."
     }
   },
   {
@@ -207,9 +335,19 @@
       "en": "Alphabet of flavours"
     },
     "text": {
-      "ru": "Выберите букву. Команды по очереди называют еду на эту букву, без повторов. На ответ — 5 секунд. Команда без ответа проигрывает; если время вышло без ошибки — ничья.",
-      "kk": "Бір әріп таңдаңыздар. Командалар кезекпен сол әріптен басталатын тағам атайды, қайталауға болмайды. Жауапқа 5 секунд. Жауап таппаған команда жеңіледі; уақыт бітіп, қате болмаса — тең ойын.",
-      "en": "Pick a letter. Teams alternate naming foods starting with it, without repeats. Allow 5 seconds per answer. A team that cannot answer loses; if time runs out with no mistakes, it’s a draw."
+      "ru": "Одна буква. Сколько блюд вы знаете? Выберите букву. По очереди называйте еду, без повторов. 5 секунд на ответ. Ошибка — проигрыш; время вышло — ничья.",
+      "kk": "Бір әріптен қанша тағам атайсыздар? Әріп таңдаңыздар. Тағамды кезекпен, қайталамай атаңыздар. Жауапқа 5 секунд. Қате — жеңіліс, уақыт бітсе — тең ойын.",
+      "en": "One letter. How many foods can you name? Choose a letter. Alternate naming foods, no repeats. 5 seconds per answer. A mistake loses; time running out is a draw."
+    },
+    "prompt": {
+      "ru": "Одна буква. Сколько блюд вы знаете?",
+      "kk": "Бір әріптен қанша тағам атайсыздар?",
+      "en": "One letter. How many foods can you name?"
+    },
+    "instruction": {
+      "ru": "Выберите букву. По очереди называйте еду, без повторов. 5 секунд на ответ. Ошибка — проигрыш; время вышло — ничья.",
+      "kk": "Әріп таңдаңыздар. Тағамды кезекпен, қайталамай атаңыздар. Жауапқа 5 секунд. Қате — жеңіліс, уақыт бітсе — тең ойын.",
+      "en": "Choose a letter. Alternate naming foods, no repeats. 5 seconds per answer. A mistake loses; time running out is a draw."
     }
   },
   {
@@ -224,9 +362,19 @@
       "en": "The best slogan"
     },
     "text": {
-      "ru": "Каждая команда придумывает слоган для этого вечера и представляет его за 10 секунд. Вместе выберите самый запоминающийся. Если не договорились — ничья.",
-      "kk": "Әр команда осы кешке ұран ойлап тауып, 10 секундта таныстырады. Ең есте қалатынын бірге таңдаңыздар. Келісе алмасаңыздар — тең ойын.",
-      "en": "Each team invents a slogan for this evening and presents it in 10 seconds. Choose the most memorable together. If you cannot agree, call it a draw."
+      "ru": "Придумайте слоган этого вечера. По 20 секунд каждой команде. Выберите лучший вместе; нет согласия — ничья.",
+      "kk": "Осы кешке ұран ойлап табыңыздар. Әр командаға 20 секунд. Ең жақсысын бірге таңдаңыздар. Келіспесеңіздер — тең ойын.",
+      "en": "Give this evening a slogan. 20 seconds per team. Choose the best together; no agreement means a draw."
+    },
+    "prompt": {
+      "ru": "Придумайте слоган этого вечера.",
+      "kk": "Осы кешке ұран ойлап табыңыздар.",
+      "en": "Give this evening a slogan."
+    },
+    "instruction": {
+      "ru": "По 20 секунд каждой команде. Выберите лучший вместе; нет согласия — ничья.",
+      "kk": "Әр командаға 20 секунд. Ең жақсысын бірге таңдаңыздар. Келіспесеңіздер — тең ойын.",
+      "en": "20 seconds per team. Choose the best together; no agreement means a draw."
     }
   },
   {
@@ -241,9 +389,19 @@
       "en": "Guess the job"
     },
     "text": {
-      "ru": "По одному участнику от команды молча изображают профессию, каждый по 20 секунд. Своя команда угадывает. Угадали обе или ни одна — ничья; иначе побеждает угадавшая команда.",
-      "kk": "Әр командадан бір адам мамандықты 20 секунд үнсіз көрсетеді. Өз командасы табады. Екеуі де тапса немесе таппаса — тең ойын; әйтпесе тапқан команда жеңеді.",
-      "en": "One person from each team silently acts out a job for 20 seconds while their own team guesses. If both or neither guess correctly, it’s a draw; otherwise the correct team wins."
+      "ru": "Профессия. Только жестами. Соперники задают профессию одному игроку, его команда угадывает. По 20 секунд. Больше угаданных ответов — победа; поровну — ничья.",
+      "kk": "Мамандық. Тек қимылмен. Қарсыластар бір ойыншыға мамандық айтады, өз командасы табады. Әр командаға 20 секунд. Көп тапқан жеңеді; бірдей болса — тең ойын.",
+      "en": "A job. Only gestures. Give one opposing player a job to mime for their team. 20 seconds per team. More correct guesses wins; equal scores mean a draw."
+    },
+    "prompt": {
+      "ru": "Профессия. Только жестами.",
+      "kk": "Мамандық. Тек қимылмен.",
+      "en": "A job. Only gestures."
+    },
+    "instruction": {
+      "ru": "Соперники задают профессию одному игроку, его команда угадывает. По 20 секунд. Больше угаданных ответов — победа; поровну — ничья.",
+      "kk": "Қарсыластар бір ойыншыға мамандық айтады, өз командасы табады. Әр командаға 20 секунд. Көп тапқан жеңеді; бірдей болса — тең ойын.",
+      "en": "Give one opposing player a job to mime for their team. 20 seconds per team. More correct guesses wins; equal scores mean a draw."
     }
   },
   {
@@ -258,9 +416,19 @@
       "en": "Don’t say the word"
     },
     "text": {
-      "ru": "Команда A объясняет слово «пицца» без слов «сыр», «тесто», «круг». Команда B — «мороженое» без «холод», «молоко», «сладкий». По 20 секунд. Успешное объяснение — победа; равный результат — ничья.",
-      "kk": "A командасы «пицца» сөзін «ірімшік», «қамыр», «дөңгелек» демей түсіндіреді. B командасы «балмұздақ» сөзін «суық», «сүт», «тәтті» демей түсіндіреді. Әрқайсысына 20 секунд. Сәтті түсіндірген команда жеңеді; бірдей нәтиже — тең ойын.",
-      "en": "Team A explains ‘pizza’ without ‘cheese’, ‘dough’, or ‘round’. Team B explains ‘ice cream’ without ‘cold’, ‘milk’, or ‘sweet’. Take 20 seconds each. A successful explanation wins; equal results mean a draw."
+      "ru": "Объясните блюдо. Не называя его. Соперники загадывают блюдо одному игроку. Он объясняет своей команде, не называя части слова. По 20 секунд. Угадала одна — победа; иначе ничья.",
+      "kk": "Тағамды атын атамай түсіндіріңіз. Қарсыластар бір ойыншыға тағам айтады. Ол сөздің бөлігін атамай, өз командасына түсіндіреді. Әр командаға 20 секунд. Біреуі тапса — жеңіс; әйтпесе тең ойын.",
+      "en": "Describe a dish. Don’t say its name. Give one opposing player a familiar dish to explain to their team. 20 seconds each; no part of its name. Both correct or neither correct: draw."
+    },
+    "prompt": {
+      "ru": "Объясните блюдо. Не называя его.",
+      "kk": "Тағамды атын атамай түсіндіріңіз.",
+      "en": "Describe a dish. Don’t say its name."
+    },
+    "instruction": {
+      "ru": "Соперники загадывают блюдо одному игроку. Он объясняет своей команде, не называя части слова. По 20 секунд. Угадала одна — победа; иначе ничья.",
+      "kk": "Қарсыластар бір ойыншыға тағам айтады. Ол сөздің бөлігін атамай, өз командасына түсіндіреді. Әр командаға 20 секунд. Біреуі тапса — жеңіс; әйтпесе тең ойын.",
+      "en": "Give one opposing player a familiar dish to explain to their team. 20 seconds each; no part of its name. Both correct or neither correct: draw."
     }
   },
   {
@@ -275,9 +443,19 @@
       "en": "Rhymes at the table"
     },
     "text": {
-      "ru": "Выберите простое слово на вашем языке. Команды по очереди находят рифмы, без повторов. На ответ 5 секунд. Кто не найдёт рифму — проигрывает; если обе справились до конца — ничья.",
-      "kk": "Өз тіліңізде қарапайым сөз таңдаңыздар. Командалар кезекпен қайталамай ұйқас табады. Жауапқа 5 секунд. Ұйқас таппаған команда жеңіледі; екеуі де соңына дейін тапса — тең ойын.",
-      "en": "Pick a simple word in your language. Teams alternate finding rhymes, without repeats. Allow 5 seconds per answer. A team that runs out loses; if both keep going until time ends, it’s a draw."
+      "ru": "Поймайте рифму. Выберите простое слово. По очереди называйте рифмы без повторов. 5 секунд на ответ. Нет рифмы — проигрыш; время вышло — ничья.",
+      "kk": "Ұйқасын табыңыздар. Қарапайым сөз таңдаңыздар. Кезекпен қайталамай ұйқас табыңыздар. Жауапқа 5 секунд. Таппаған жеңіледі; уақыт бітсе — тең ойын.",
+      "en": "Keep the rhyme going. Pick a simple word. Alternate rhymes, no repeats. 5 seconds per answer. No rhyme loses; time running out is a draw."
+    },
+    "prompt": {
+      "ru": "Поймайте рифму.",
+      "kk": "Ұйқасын табыңыздар.",
+      "en": "Keep the rhyme going."
+    },
+    "instruction": {
+      "ru": "Выберите простое слово. По очереди называйте рифмы без повторов. 5 секунд на ответ. Нет рифмы — проигрыш; время вышло — ничья.",
+      "kk": "Қарапайым сөз таңдаңыздар. Кезекпен қайталамай ұйқас табыңыздар. Жауапқа 5 секунд. Таппаған жеңіледі; уақыт бітсе — тең ойын.",
+      "en": "Pick a simple word. Alternate rhymes, no repeats. 5 seconds per answer. No rhyme loses; time running out is a draw."
     }
   },
   {
@@ -292,9 +470,19 @@
       "en": "Restaurant of the future"
     },
     "text": {
-      "ru": "У каждой команды 20 секунд на презентацию самого необычного ресторана будущего. Вместе выберите идею, куда захотелось бы сходить. Нет единого мнения — ничья.",
-      "kk": "Әр командаға болашақтың ең ерекше мейрамханасын таныстыруға 20 секунд беріледі. Барғыңыз келетін идеяны бірге таңдаңыздар. Ортақ пікір болмаса — тең ойын.",
-      "en": "Each team gets 20 seconds to pitch the most unusual restaurant of the future. Together choose the one you would visit. No agreement means a draw."
+      "ru": "Ресторан будущего. Ваша версия? По 20 секунд на идею каждой команде. Выберите, куда пошли бы вместе. Не договорились — ничья.",
+      "kk": "Болашақ мейрамханасы қандай болады? Әр командаға идея айтуға 20 секунд. Қайсысына баратыныңызды бірге шешіңіздер. Келіспесеңіздер — тең ойын.",
+      "en": "The restaurant of the future. Your version? 20 seconds per team to pitch an idea. Pick the one you’d visit together. No agreement means a draw."
+    },
+    "prompt": {
+      "ru": "Ресторан будущего. Ваша версия?",
+      "kk": "Болашақ мейрамханасы қандай болады?",
+      "en": "The restaurant of the future. Your version?"
+    },
+    "instruction": {
+      "ru": "По 20 секунд на идею каждой команде. Выберите, куда пошли бы вместе. Не договорились — ничья.",
+      "kk": "Әр командаға идея айтуға 20 секунд. Қайсысына баратыныңызды бірге шешіңіздер. Келіспесеңіздер — тең ойын.",
+      "en": "20 seconds per team to pitch an idea. Pick the one you’d visit together. No agreement means a draw."
     }
   }
 ]

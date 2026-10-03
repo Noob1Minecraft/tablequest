@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { X, Download } from "lucide-react";
-import QRCode from "qrcode";
 import type { Key } from "../i18n";
 export type T = (key: Key, params?: Record<string, string | number>) => string;
 export function Modal({
@@ -18,8 +17,22 @@ export function Modal({
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = ref.current!;
+    const opener =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     dialog.showModal();
-    return () => dialog.close();
+    return () => {
+      dialog.close();
+      queueMicrotask(() => {
+        if (document.querySelector("dialog[open]")) return;
+        const target =
+          opener?.isConnected && opener !== document.body
+            ? opener
+            : document.querySelector<HTMLElement>(".menu-trigger");
+        target?.focus();
+      });
+    };
   }, []);
   return (
     <dialog
@@ -44,9 +57,12 @@ export function Modal({
   );
 }
 export function QRModal({ t, close }: { t: T; close: () => void }) {
-  const [url, setUrl] = useState(
-    location.protocol === "https:" ? location.href : "",
-  );
+  const [url, setUrl] = useState(() => {
+    const link = new URL(location.href);
+    link.searchParams.delete("demo");
+    link.searchParams.delete("mode");
+    return link.protocol === "https:" ? link.href : "";
+  });
   const [svg, setSvg] = useState("");
   const [failed, setFailed] = useState(false);
   let valid = false;
@@ -69,11 +85,14 @@ export function QRModal({ t, close }: { t: T; close: () => void }) {
     setSvg("");
     setFailed(false);
     if (valid)
-      QRCode.toString(url, {
-        type: "svg",
-        margin: 3,
-        color: { dark: "#214c3d", light: "#ffffff" },
-      })
+      import("qrcode")
+        .then(({ default: QRCode }) =>
+          QRCode.toString(url, {
+            type: "svg",
+            margin: 3,
+            color: { dark: "#111310", light: "#ffffff" },
+          }),
+        )
         .then((result) => {
           if (live) setSvg(result);
         })

@@ -6,6 +6,8 @@ export interface Quest {
   id: string;
   title: Localized;
   text: Localized;
+  prompt: Localized;
+  instruction: Localized;
   modes: Mode[];
   category: (Company | "any")[];
   minPlayers: number;
