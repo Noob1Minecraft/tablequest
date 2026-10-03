@@ -63,6 +63,16 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: github-pages
+            url: https://noob1minecraft.github.io/tablequest/
+          - target: vercel
+            url: https://tablequest-pink.vercel.app/
+          - target: render
+            url: https://tablequest-2crp.onrender.com/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -71,15 +81,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Wait for production branding update
+        run: node scripts/wait-production.mjs
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ matrix.url }}
       - name: Verify public mobile and desktop guest journeys
         run: npm run test:e2e
         env:
-          PLAYWRIGHT_BASE_URL: https://noob1minecraft.github.io/tablequest/
+          PLAYWRIGHT_BASE_URL: ${{ matrix.url }}
       - name: Save public screenshots and failure traces
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: public-browser-review
+          name: public-browser-review-${{ matrix.target }}
           path: |
             artifacts/
             test-results/

@@ -12,7 +12,7 @@ export default defineConfig({
       manifest: {
         name: "TableQuest",
         short_name: "TableQuest",
-        description: "Less scrolling. More together.",
+        description: "Less screen. More together.",
         theme_color: "#111310",
         background_color: "#111310",
         display: "standalone",

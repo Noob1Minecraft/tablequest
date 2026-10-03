@@ -11,6 +11,8 @@ async function start(
   await page.goto("./");
   await expect(page.locator('[data-design="after-hours"]')).toBeVisible();
   await page.getByRole("combobox").selectOption(language);
+  await expect(page.locator(".welcome h1 span")).toHaveText(t.heroLead);
+  await expect(page.locator(".welcome h1 em")).toHaveText(t.hero);
   await page.getByRole("button", { name: t.start, exact: true }).click();
   await page.getByRole("button", { name: t.next, exact: true }).click();
   await page.getByRole("button", { name: new RegExp(mode) }).click();
@@ -154,7 +156,7 @@ test("QR generation and local URL rejection", async ({ page }) => {
   ).toBeVisible();
   await page
     .getByRole("textbox", { name: "Website link" })
-    .fill("https://example.com/tablequest/?table=12");
+    .fill("https://tablequest-pink.vercel.app/?table=12");
   await expect(
     page.getByRole("link", { name: "Download QR code" }),
   ).toHaveAttribute("href", /^data:image\/svg/);
@@ -347,6 +349,7 @@ for (const width of [320, 390, 768, 1440])
       await page.screenshot({
         path: `artifacts/redesign-${width}-${stage}.png`,
         fullPage: true,
+        animations: "disabled",
       });
     }
     await check("quest");

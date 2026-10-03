@@ -1,0 +1,19 @@
+services:
+  - type: web
+    runtime: static
+    name: tablequest
+    repo: https://github.com/Noob1Minecraft/tablequest
+    branch: main
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: BASE_PATH
+        value: /
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
+    headers:
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
