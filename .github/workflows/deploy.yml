@@ -38,3 +38,24 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published site
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          curl --fail --retry 6 --retry-delay 5 --retry-all-errors --max-time 30 "$SITE_URL" -o site.html
+          curl --fail --retry 6 --retry-delay 5 --retry-all-errors --max-time 30 "${SITE_URL}manifest.webmanifest" -o manifest.json
+          curl --fail --retry 6 --retry-delay 5 --retry-all-errors --max-time 30 "${SITE_URL}sw.js" -o sw.js
+          python - <<'PY'
+          import json, os, re, urllib.request
+          from urllib.parse import urljoin
+          from pathlib import Path
+          html = Path('site.html').read_text()
+          assert 'TableQuest' in html
+          assert json.loads(Path('manifest.json').read_text())['name'] == 'TableQuest'
+          assert 'precacheAndRoute' in Path('sw.js').read_text()
+          for path in re.findall(r'(?:src|href)="([^"]+\.(?:js|css))"', html):
+              with urllib.request.urlopen(urljoin(os.environ['SITE_URL'], path)) as response:
+                  assert response.status == 200
+                  print('OK:', response.url)
+          print('Published HTML, JS, CSS, manifest and service worker verified.')
+          PY
